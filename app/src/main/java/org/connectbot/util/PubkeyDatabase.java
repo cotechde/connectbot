@@ -39,7 +39,7 @@ public class PubkeyDatabase extends RobustSQLiteOpenHelper {
 	public final static String TAG = "CB.PubkeyDatabase";
 
 	public final static String DB_NAME = "pubkeys";
-	public final static int DB_VERSION = 2;
+	public final static int DB_VERSION = 3;
 
 	public final static String TABLE_PUBKEYS = "pubkeys";
 	public final static String FIELD_PUBKEY_NICKNAME = "nickname";
@@ -50,6 +50,7 @@ public class PubkeyDatabase extends RobustSQLiteOpenHelper {
 	public final static String FIELD_PUBKEY_STARTUP = "startup";
 	public final static String FIELD_PUBKEY_CONFIRMUSE = "confirmuse";
 	public final static String FIELD_PUBKEY_LIFETIME = "lifetime";
+	public final static String FIELD_PUBKEY_SECURITYKEY = "securitykey";
 
 	public final static String KEY_TYPE_RSA = "RSA";
 	public final static String KEY_TYPE_DSA = "DSA";
@@ -105,7 +106,8 @@ public class PubkeyDatabase extends RobustSQLiteOpenHelper {
 				+ FIELD_PUBKEY_ENCRYPTED + " INTEGER, "
 				+ FIELD_PUBKEY_STARTUP + " INTEGER, "
 				+ FIELD_PUBKEY_CONFIRMUSE + " INTEGER DEFAULT 0, "
-				+ FIELD_PUBKEY_LIFETIME + " INTEGER DEFAULT 0)");
+				+ FIELD_PUBKEY_LIFETIME + " INTEGER DEFAULT 0, "
+				+ FIELD_PUBKEY_SECURITYKEY + " INTEGER DEFAULT 0)");
 	}
 
 	@Override
@@ -116,6 +118,10 @@ public class PubkeyDatabase extends RobustSQLiteOpenHelper {
 						+ " ADD COLUMN " + FIELD_PUBKEY_CONFIRMUSE + " INTEGER DEFAULT 0");
 				db.execSQL("ALTER TABLE " + TABLE_PUBKEYS
 						+ " ADD COLUMN " + FIELD_PUBKEY_LIFETIME + " INTEGER DEFAULT 0");
+				// fall through
+			case 2:
+				db.execSQL("ALTER TABLE " + TABLE_PUBKEYS
+						+ " ADD COLUMN " + FIELD_PUBKEY_SECURITYKEY + " INTEGER DEFAULT 0");
 			}
 	}
 
@@ -157,7 +163,8 @@ public class PubkeyDatabase extends RobustSQLiteOpenHelper {
 				COL_ENCRYPTED = c.getColumnIndexOrThrow(FIELD_PUBKEY_ENCRYPTED),
 				COL_STARTUP = c.getColumnIndexOrThrow(FIELD_PUBKEY_STARTUP),
 				COL_CONFIRMUSE = c.getColumnIndexOrThrow(FIELD_PUBKEY_CONFIRMUSE),
-				COL_LIFETIME = c.getColumnIndexOrThrow(FIELD_PUBKEY_LIFETIME);
+				COL_LIFETIME = c.getColumnIndexOrThrow(FIELD_PUBKEY_LIFETIME),
+				COL_SECURITYKEY = c.getColumnIndexOrThrow(FIELD_PUBKEY_SECURITYKEY);
 
 			while (c.moveToNext()) {
 				PubkeyBean pubkey = new PubkeyBean();
@@ -171,6 +178,7 @@ public class PubkeyDatabase extends RobustSQLiteOpenHelper {
 				pubkey.setStartup(c.getInt(COL_STARTUP) > 0);
 				pubkey.setConfirmUse(c.getInt(COL_CONFIRMUSE) > 0);
 				pubkey.setLifetime(c.getInt(COL_LIFETIME));
+				pubkey.setSecurityKey(c.getInt(COL_SECURITYKEY) > 0);
 
 				pubkeys.add(pubkey);
 			}
@@ -214,6 +222,7 @@ public class PubkeyDatabase extends RobustSQLiteOpenHelper {
 		pubkey.setStartup(c.getInt(c.getColumnIndexOrThrow(FIELD_PUBKEY_STARTUP)) > 0);
 		pubkey.setConfirmUse(c.getInt(c.getColumnIndexOrThrow(FIELD_PUBKEY_CONFIRMUSE)) > 0);
 		pubkey.setLifetime(c.getInt(c.getColumnIndexOrThrow(FIELD_PUBKEY_LIFETIME)));
+		pubkey.setSecurityKey(c.getInt(c.getColumnIndexOrThrow(FIELD_PUBKEY_SECURITYKEY)) > 0);
 
 		return pubkey;
 	}

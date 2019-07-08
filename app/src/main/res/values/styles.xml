@@ -29,6 +29,14 @@
 		<item name="colorAccent">@color/accent</item>
 	</style>
 
+	<style name="AppTheme.SmartcardActivity.Translucent" parent="Theme.AppCompat.NoActionBar">
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:windowBackground">@android:color/transparent</item>
+		<item name="android:colorBackgroundCacheHint">@null</item>
+		<item name="android:windowIsTranslucent">true</item>
+		<item name="android:windowAnimationStyle">@android:style/Animation</item>
+	</style>
+
 	<style name="KeyboardKey">
 		<item name="android:layout_width">45dip</item>
 		<item name="android:layout_height">30dip</item>

@@ -258,8 +258,8 @@ dependencies {
     googleImplementation 'com.google.android.gms:play-services-base:16.0.1'
     ossImplementation 'org.conscrypt:conscrypt-android:1.4.1'
 
-    implementation 'de.cotech:hwsecurity-openpgp:2.2.3'
-    implementation 'de.cotech:hwsecurity-smartcard-ui:2.2.3'
+    implementation 'de.cotech:hwsecurity-openpgp:2.3.0'
+    implementation 'de.cotech:hwsecurity-ui:2.3.0'
 
     implementation "androidx.recyclerview:recyclerview:$supportLibraryVersion"
     implementation "androidx.legacy:legacy-support-v4:$supportLibraryVersion"

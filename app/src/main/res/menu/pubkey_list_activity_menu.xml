@@ -33,4 +33,10 @@
 		connectbot:showAsAction="ifRoom"
 		/>
 
+	<item android:id="@+id/add_security_key_icon"
+		android:icon="@drawable/key_plus"
+		android:title="@string/pubkey_add_security_key"
+		connectbot:showAsAction="ifRoom"
+		/>
+
 </menu>

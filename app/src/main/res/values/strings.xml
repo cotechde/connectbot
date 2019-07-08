@@ -502,10 +502,12 @@
 	<string name="terminal_auth_pass">"Attempting 'password' authentication"</string>
 	<string name="terminal_auth_pass_fail">"Authentication method 'password' failed"</string>
 
+	<string name="terminal_auth_pubkey_security_key">"Attempting 'publickey' authentication with hardware security key"</string>
 	<string name="terminal_auth_pubkey_any">"Attempting 'publickey' authentication with any in-memory public keys"</string>
 	<string name="terminal_auth_pubkey_invalid">"Selected public key is invalid, try reselecting key in host editor"</string>
 	<string name="terminal_auth_pubkey_specific">"Attempting 'publickey' authentication with a specific public key"</string>
 	<string name="terminal_auth_pubkey_fail">"Authentication method 'publickey' with key '%1$s' failed"</string>
+	<string name="terminal_auth_pubkey_fail_security_key">"Authentication method 'publickey' with OpenPGP hardware security key failed"</string>
 
 	<string name="terminal_auth_ki">"Attempting 'keyboard-interactive' authentication"</string>
 	<string name="terminal_auth_ki_fail">"Authentication method 'keyboard-interactive' failed"</string>
@@ -516,6 +518,8 @@
 	<string name="terminal_enable_portfoward">"Enable port forward: %1$s"</string>
 
 	<string name="local_shell_unavailable">"Failure! Local shell is unavailable on this phone."</string>
+
+	<string name="security_key_authenticate">Authenticate with %s</string>
 
 	<!-- Text sent to the user to alert them that a Terminal Bell is received in a background session -->
 	<string name="notification_text">"%1$s wants your attention."</string>
@@ -643,6 +647,8 @@
 	<string name="pubkey_add_new">Add new pubkey</string>
 	<!-- Text for button which, when clicked, brings up picker to import an existing pubkey. -->
 	<string name="pubkey_import_existing">Import existing pubkey</string>
+	<!-- Text for button which, when clicked, brings up dialog to add security key. -->
+	<string name="pubkey_add_security_key">Add OpenPGP hardware security key</string>
 	<!-- Text for dialog which explains that the host URI is invalid and asks to discard. -->
 	<string name="discard_host_changes_message">Host URI is invalid. Would you like to discard changes?</string>
 	<!-- Text for button which discards changes to the host. -->
@@ -673,4 +679,5 @@
 	     Added to the end of a key description to indicate that the key is encrypted (i.e,
 	     password protected). -->
 	<string name="key_attribute_encrypted">(encrypted)</string>
+	<string name="key_attribute_hardware">(on hardware security key)</string>
 </resources>

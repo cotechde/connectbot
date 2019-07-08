@@ -43,6 +43,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.connectbot.SecurityKeySignatureProxy;
 import org.connectbot.R;
 import org.connectbot.bean.HostBean;
 import org.connectbot.bean.PortForwardBean;
@@ -277,15 +278,20 @@ public class SSH extends AbsTransport implements ConnectionMonitor, InteractiveC
 						}
 					}
 				} else {
-					bridge.outputLine(manager.res.getString(R.string.terminal_auth_pubkey_specific));
 					// use a specific key for this host, as requested
 					PubkeyBean pubkey = manager.pubkeydb.findPubkeyById(pubkeyId);
 
-					if (pubkey == null)
+					if (pubkey == null) {
 						bridge.outputLine(manager.res.getString(R.string.terminal_auth_pubkey_invalid));
-					else
+					} else if (pubkey.isSecurityKey()) {
+						bridge.outputLine(manager.getString(R.string.terminal_auth_pubkey_security_key));
+						if (trySecurityKey(pubkey))
+							finishConnection();
+					} else {
+						bridge.outputLine(manager.res.getString(R.string.terminal_auth_pubkey_specific));
 						if (tryPublicKey(pubkey))
 							finishConnection();
+					}
 				}
 
 				pubkeysExhausted = true;
@@ -315,10 +321,21 @@ public class SSH extends AbsTransport implements ConnectionMonitor, InteractiveC
 			}
 		} catch (IllegalStateException e) {
 			Log.e(TAG, "Connection went away while we were trying to authenticate", e);
-			return;
 		} catch (Exception e) {
 			Log.e(TAG, "Problem during handleAuthentication()", e);
 		}
+	}
+
+	private boolean trySecurityKey(PubkeyBean pubkey) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+		PublicKey pubKey = PubkeyUtils.decodePublic(pubkey.getPublicKey(), pubkey.getType());
+		String nickname = pubkey.getNickname();
+
+		SecurityKeySignatureProxy securityKeySignatureProxy = new SecurityKeySignatureProxy(pubKey, nickname, manager.getApplicationContext());
+		boolean success = connection.authenticateWithPublicKey(host.getUsername(), securityKeySignatureProxy);
+
+		if (!success)
+			bridge.outputLine(manager.res.getString(R.string.terminal_auth_pubkey_fail_security_key));
+		return success;
 	}
 
 	/**

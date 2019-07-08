@@ -42,6 +42,7 @@ import com.trilead.ssh2.crypto.Base64;
 import com.trilead.ssh2.crypto.PEMDecoder;
 import com.trilead.ssh2.crypto.PEMStructure;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -56,6 +57,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import android.text.ClipboardManager;
@@ -72,6 +75,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import de.cotech.hw.openpgp.OpenPgpSecurityKey;
+import de.cotech.hw.secrets.PinProvider;
+import de.cotech.hw.ui.SecurityKeyDialogInterface;
+import de.cotech.hw.ui.SecurityKeyDialogOptions;
+import de.cotech.hw.ui.SecurityKeyDialogFactory;
+import de.cotech.hw.ui.SecurityKeyDialogFragment;
 
 /**
  * List public keys in database by nickname and describe their properties. Allow users to import,
@@ -79,7 +88,7 @@ import android.widget.Toast;
  *
  * @author Kenny Root
  */
-public class PubkeyListActivity extends AppCompatListActivity implements EventListener {
+public class PubkeyListActivity extends AppCompatListActivity implements EventListener, SecurityKeyDialogFragment.SecurityKeyDialogCallback<OpenPgpSecurityKey> {
 	public final static String TAG = "CB.PubkeyListActivity";
 
 	private static final int MAX_KEYFILE_SIZE = 32768;
@@ -158,6 +167,9 @@ public class PubkeyListActivity extends AppCompatListActivity implements EventLi
 		case R.id.import_existing_key_icon:
 			importExistingKey();
 			return true;
+		case R.id.add_security_key_icon:
+			addSecurityKey();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -173,6 +185,41 @@ public class PubkeyListActivity extends AppCompatListActivity implements EventLi
 			return importExistingKeyOpenIntents(sdcard, pickerTitle)
 					|| importExistingKeyAndExplorer(sdcard, pickerTitle) || pickFileSimple();
 		}
+	}
+
+	private void addSecurityKey() {
+		SecurityKeyDialogOptions options = SecurityKeyDialogOptions.builder()
+				.setPinMode(SecurityKeyDialogOptions.PinMode.NO_PIN_INPUT)
+				.setShowReset(false)
+				.setPreventScreenshots(!BuildConfig.DEBUG)
+				.setTitle(getString(R.string.pubkey_add_security_key))
+				.build();
+
+		SecurityKeyDialogFragment<OpenPgpSecurityKey> securityKeyDialogFragment = SecurityKeyDialogFactory.newOpenPgpInstance(options);
+		securityKeyDialogFragment.show(getSupportFragmentManager());
+	}
+
+	@Override
+	public void onSecurityKeyDialogDiscovered(@NonNull SecurityKeyDialogInterface dialogInterface,
+			@NonNull OpenPgpSecurityKey openPgpSecurityKey, @Nullable PinProvider pinProvider) throws IOException {
+		@SuppressLint("WrongThread") PublicKey publicKey = openPgpSecurityKey.retrieveAuthenticationPublicKey();
+		String nickname = openPgpSecurityKey.getSecurityKeyName() + " (" + openPgpSecurityKey.getSerialNumber() + ")";
+		dialogInterface.dismiss();
+		addSecurityKey(publicKey, nickname);
+	}
+
+	private void addSecurityKey(PublicKey publicKey, String nickname) {
+		PubkeyBean pubkey = new PubkeyBean();
+		pubkey.setSecurityKey(true);
+		pubkey.setPublicKey(publicKey.getEncoded());
+		pubkey.setNickname(nickname);
+		String algorithm = convertAlgorithmName(publicKey.getAlgorithm());
+		pubkey.setType(algorithm);
+
+		PubkeyDatabase pubkeyDb = PubkeyDatabase.get(this);
+		pubkeyDb.savePubkey(pubkey);
+
+		updateList();
 	}
 
 	/**
@@ -482,6 +529,10 @@ public class PubkeyListActivity extends AppCompatListActivity implements EventLi
 
 		@Override
 		public void onClick(View v) {
+			if (pubkey.isSecurityKey()) {
+				return;
+			}
+
 			boolean loaded = bound != null && bound.isKeyLoaded(pubkey.getNickname());
 
 			// handle toggling key in-memory on/off
@@ -506,6 +557,7 @@ public class PubkeyListActivity extends AppCompatListActivity implements EventLi
 			final boolean loaded = bound != null && bound.isKeyLoaded(pubkey.getNickname());
 
 			MenuItem load = menu.add(loaded ? R.string.pubkey_memory_unload : R.string.pubkey_memory_load);
+			load.setEnabled(!pubkey.isSecurityKey());
 			load.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(MenuItem item) {
@@ -521,7 +573,7 @@ public class PubkeyListActivity extends AppCompatListActivity implements EventLi
 			});
 
 			MenuItem onstartToggle = menu.add(R.string.pubkey_load_on_start);
-			onstartToggle.setEnabled(!pubkey.isEncrypted());
+			onstartToggle.setEnabled(!pubkey.isEncrypted() && !pubkey.isSecurityKey());
 			onstartToggle.setCheckable(true);
 			onstartToggle.setChecked(pubkey.isStartup());
 			onstartToggle.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -554,7 +606,7 @@ public class PubkeyListActivity extends AppCompatListActivity implements EventLi
 			});
 
 			MenuItem copyPrivateToClipboard = menu.add(R.string.pubkey_copy_private);
-			copyPrivateToClipboard.setEnabled(!pubkey.isEncrypted() || imported);
+			copyPrivateToClipboard.setEnabled((!pubkey.isEncrypted() || imported) && !pubkey.isSecurityKey());
 			copyPrivateToClipboard.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(MenuItem item) {
@@ -577,7 +629,7 @@ public class PubkeyListActivity extends AppCompatListActivity implements EventLi
 			});
 
 			MenuItem changePassword = menu.add(R.string.pubkey_change_password);
-			changePassword.setEnabled(!imported);
+			changePassword.setEnabled(!imported && !pubkey.isSecurityKey());
 			changePassword.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(MenuItem item) {

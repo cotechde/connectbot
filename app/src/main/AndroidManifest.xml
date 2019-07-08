@@ -38,6 +38,7 @@
 		android:xlargeScreens="true" />
 
 	<application
+		android:name=".ConnectBotApplication"
 		android:allowBackup="true"
 		android:backupAgent=".service.BackupAgent"
 		android:description="@string/app_desc"
@@ -76,8 +77,14 @@
 		</activity>
 
 		<activity
+			android:name=".SecurityKeyActivity"
+			android:theme="@style/AppTheme.SmartcardActivity.Translucent"
+			android:configChanges="keyboard|keyboardHidden|orientation">
+		</activity>
+
+		<activity
 			android:name=".PubkeyListActivity"
-			android:configChanges="keyboardHidden|orientation"
+			android:configChanges="keyboard|keyboardHidden|orientation"
 			android:label="@string/title_pubkey_list">
 
 			<meta-data
@@ -167,6 +174,9 @@
 			android:name="org.connectbot.service.TerminalManager"
 			android:configChanges="keyboardHidden|orientation"
 			android:description="@string/service_desc"/>
+
+		<service
+			android:name="org.connectbot.service.SecurityKeyService"/>
 
 		<activity
 			android:name=".ConsoleActivity"
