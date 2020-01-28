@@ -201,7 +201,7 @@
   <string name="no">Nei</string>
   <string name="yes">Ja</string>
   <string name="menu_colors_reset">Tilbakestill</string>
-  <string name="app_is_running">TermBot kjører</string>
+  <string name="app_is_running">ConnectBot kjører</string>
   <string name="color_red">rød</string>
   <string name="color_green">grønn</string>
   <string name="color_blue">blå</string>

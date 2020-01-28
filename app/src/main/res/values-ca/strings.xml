@@ -180,7 +180,7 @@
   <string name="no">No</string>
   <string name="yes">Sí</string>
   <string name="menu_colors_reset">Reinicia</string>
-  <string name="app_is_running">El TermBot està en marxa</string>
+  <string name="app_is_running">El ConnectBot està en marxa</string>
   <string name="color_red">vermell</string>
   <string name="color_green">verd</string>
   <string name="color_blue">blau</string>

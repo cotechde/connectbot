@@ -181,7 +181,7 @@
   <string name="no">לא</string>
   <string name="yes">כן</string>
   <string name="menu_colors_reset">איפוס</string>
-  <string name="app_is_running">TermBot פעיל</string>
+  <string name="app_is_running">ConnectBot פעיל</string>
   <string name="color_red">אדום</string>
   <string name="color_green">ירוק</string>
   <string name="color_blue">כחול</string>

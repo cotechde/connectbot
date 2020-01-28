@@ -178,7 +178,7 @@
   <string name="no">Nem</string>
   <string name="yes">Igen</string>
   <string name="menu_colors_reset">Visszaállít</string>
-  <string name="app_is_running">TermBot már fut</string>
+  <string name="app_is_running">ConnectBot már fut</string>
   <string name="color_red">piros</string>
   <string name="color_green">zöld</string>
   <string name="color_blue">kék</string>

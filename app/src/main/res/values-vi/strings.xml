@@ -224,7 +224,7 @@
   <string name="no">Không</string>
   <string name="yes">Đồng ý</string>
   <string name="menu_colors_reset">Tái Thiết Lập</string>
-  <string name="app_is_running">TermBot đang kết nối</string>
+  <string name="app_is_running">ConnectBot đang kết nối</string>
   <string name="color_red">đỏ</string>
   <string name="color_green">xanh lá cây</string>
   <string name="color_blue">xanh nước biển</string>

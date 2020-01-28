@@ -228,7 +228,7 @@
   <string name="no">Ne</string>
   <string name="yes">Ano</string>
   <string name="menu_colors_reset">Obnovit</string>
-  <string name="app_is_running">TermBot běží</string>
+  <string name="app_is_running">ConnectBot běží</string>
   <string name="color_red">červená</string>
   <string name="color_green">zelená</string>
   <string name="color_blue">modrá</string>

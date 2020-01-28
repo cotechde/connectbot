@@ -187,7 +187,7 @@
   <string name="no">Nee</string>
   <string name="yes">Ja</string>
   <string name="menu_colors_reset">Terug naar standaardinstellingen</string>
-  <string name="app_is_running">TermBot werkt (Connecties zijn actief)</string>
+  <string name="app_is_running">ConnectBot werkt (Connecties zijn actief)</string>
   <string name="color_red">rood</string>
   <string name="color_green">groen</string>
   <string name="color_blue">blauw</string>

@@ -178,7 +178,7 @@
   <string name="no">아니오</string>
   <string name="yes">예</string>
   <string name="menu_colors_reset">초기화</string>
-  <string name="app_is_running">TermBot 실행 중</string>
+  <string name="app_is_running">ConnectBot 실행 중</string>
   <string name="color_red">빨간색</string>
   <string name="color_green">녹색</string>
   <string name="color_blue">파란색</string>

@@ -227,7 +227,7 @@
   <string name="no">いいえ</string>
   <string name="yes">はい</string>
   <string name="menu_colors_reset">リセット</string>
-  <string name="app_is_running">TermBot起動中</string>
+  <string name="app_is_running">ConnectBot起動中</string>
   <string name="color_red">赤</string>
   <string name="color_green">緑</string>
   <string name="color_blue">青</string>

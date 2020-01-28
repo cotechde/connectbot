@@ -229,7 +229,7 @@
   <string name="no">Нет</string>
   <string name="yes">Да</string>
   <string name="menu_colors_reset">Сбросить</string>
-  <string name="app_is_running">TermBot запущен</string>
+  <string name="app_is_running">ConnectBot запущен</string>
   <string name="color_red">красный</string>
   <string name="color_green">зелёный</string>
   <string name="color_blue">синий</string>

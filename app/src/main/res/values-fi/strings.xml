@@ -177,7 +177,7 @@
   <string name="no">Ei</string>
   <string name="yes">Kyllä</string>
   <string name="menu_colors_reset">Palauta</string>
-  <string name="app_is_running">TermBot on käynnissä</string>
+  <string name="app_is_running">ConnectBot on käynnissä</string>
   <string name="color_red">punainen</string>
   <string name="color_green">vihreä</string>
   <string name="color_blue">sininen</string>

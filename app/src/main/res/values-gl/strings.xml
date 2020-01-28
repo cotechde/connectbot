@@ -227,7 +227,7 @@
   <string name="no">Non</string>
   <string name="yes">Si</string>
   <string name="menu_colors_reset">Reiniciar</string>
-  <string name="app_is_running">TermBot está en execución</string>
+  <string name="app_is_running">ConnectBot está en execución</string>
   <string name="color_red">vermello</string>
   <string name="color_green">verde</string>
   <string name="color_blue">azul</string>
