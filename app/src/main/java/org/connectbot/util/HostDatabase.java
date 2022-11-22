@@ -52,7 +52,7 @@ public class HostDatabase extends RobustSQLiteOpenHelper implements HostStorage,
 	public final static String TAG = "CB.HostDatabase";
 
 	public final static String DB_NAME = "hosts";
-	public final static int DB_VERSION = 26;
+	public final static int DB_VERSION = 27;
 
 	public final static String TABLE_HOSTS = "hosts";
 	public final static String FIELD_HOST_NICKNAME = "nickname";
@@ -73,6 +73,9 @@ public class HostDatabase extends RobustSQLiteOpenHelper implements HostStorage,
 	public final static String FIELD_HOST_ENCODING = "encoding";
 	public final static String FIELD_HOST_STAYCONNECTED = "stayconnected";
 	public final static String FIELD_HOST_QUICKDISCONNECT = "quickdisconnect";
+	public final static String FIELD_HOST_MOSHPORT = "moshport";
+	public final static String FIELD_HOST_MOSH_SERVER = "moshserver";
+	public final static String FIELD_HOST_LOCALE = "locale";
 
 	public final static String TABLE_KNOWNHOSTS = "knownhosts";
 	public final static String FIELD_KNOWNHOSTS_HOSTID = "hostid";
@@ -117,6 +120,8 @@ public class HostDatabase extends RobustSQLiteOpenHelper implements HostStorage,
 	public final static String AUTHAGENT_YES = "yes";
 
 	public final static String ENCODING_DEFAULT = Charset.defaultCharset().name();
+	public final static String LOCALE_DEFAULT = "en_US.UTF-8";
+	public final static String MOSH_SERVER_DEFAULT = "mosh-server";
 
 	public final static long PUBKEYID_NEVER = -2;
 	public final static long PUBKEYID_ANY = -1;
@@ -142,7 +147,10 @@ public class HostDatabase extends RobustSQLiteOpenHelper implements HostStorage,
 			+ FIELD_HOST_COMPRESSION + " TEXT DEFAULT '" + Boolean.toString(false) + "', "
 			+ FIELD_HOST_ENCODING + " TEXT DEFAULT '" + ENCODING_DEFAULT + "', "
 			+ FIELD_HOST_STAYCONNECTED + " TEXT DEFAULT '" + Boolean.toString(false) + "', "
-			+ FIELD_HOST_QUICKDISCONNECT + " TEXT DEFAULT '" + Boolean.toString(false) + "'";
+			+ FIELD_HOST_QUICKDISCONNECT + " TEXT DEFAULT '" + Boolean.toString(false) + "'"
+			+ FIELD_HOST_MOSHPORT + " INTEGER DEFAULT 0, "
+			+ FIELD_HOST_MOSH_SERVER + " TEXT DEFAULT '" + MOSH_SERVER_DEFAULT + "' "
+			+ FIELD_HOST_LOCALE + " TEXT DEFAULT '" + LOCALE_DEFAULT + "', ";
 
 	public static final String CREATE_TABLE_HOSTS = "CREATE TABLE " + TABLE_HOSTS
 			+ " (" + TABLE_HOSTS_COLUMNS + ")";
@@ -229,7 +237,7 @@ public class HostDatabase extends RobustSQLiteOpenHelper implements HostStorage,
 				+ FIELD_PORTFORWARD_TYPE + " TEXT NOT NULL DEFAULT '" + PORTFORWARD_LOCAL + "', "
 				+ FIELD_PORTFORWARD_SOURCEPORT + " INTEGER NOT NULL DEFAULT 8080, "
 				+ FIELD_PORTFORWARD_DESTADDR + " TEXT, "
-				+ FIELD_PORTFORWARD_DESTPORT + " TEXT)");
+				+ FIELD_PORTFORWARD_DESTPORT + " TEXT, ");
 
 		db.execSQL("CREATE INDEX " + TABLE_PORTFORWARDS + FIELD_PORTFORWARD_HOSTID + "index ON "
 				+ TABLE_PORTFORWARDS + " (" + FIELD_PORTFORWARD_HOSTID + ");");
@@ -399,6 +407,14 @@ public class HostDatabase extends RobustSQLiteOpenHelper implements HostStorage,
 			// fall through
 		case 25:
 			// TermBot update with agents, no longer in this new version based on Hardware Security SDK
+		case 26:
+			db.execSQL("ALTER TABLE " + TABLE_HOSTS
+					+ " ADD COLUMN " + FIELD_HOST_MOSHPORT + " INTEGER DEFAULT 0");
+			db.execSQL("ALTER TABLE " + TABLE_HOSTS
+					+ " ADD COLUMN " + FIELD_HOST_MOSH_SERVER + " TEXT DEFAULT '" + MOSH_SERVER_DEFAULT + "'");
+			db.execSQL("ALTER TABLE " + TABLE_HOSTS
+					+ " ADD COLUMN " + FIELD_HOST_LOCALE + " TEXT DEFAULT '" + LOCALE_DEFAULT + "'");
+			// fall through
 		}
 	}
 
@@ -500,16 +516,19 @@ public class HostDatabase extends RobustSQLiteOpenHelper implements HostStorage,
 			COL_LASTCONNECT = c.getColumnIndexOrThrow(FIELD_HOST_LASTCONNECT),
 			COL_COLOR = c.getColumnIndexOrThrow(FIELD_HOST_COLOR),
 			COL_USEKEYS = c.getColumnIndexOrThrow(FIELD_HOST_USEKEYS),
-			COL_USEAUTHAGENT = c.getColumnIndexOrThrow(FIELD_HOST_USEAUTHAGENT),
-			COL_POSTLOGIN = c.getColumnIndexOrThrow(FIELD_HOST_POSTLOGIN),
-			COL_PUBKEYID = c.getColumnIndexOrThrow(FIELD_HOST_PUBKEYID),
-			COL_WANTSESSION = c.getColumnIndexOrThrow(FIELD_HOST_WANTSESSION),
-			COL_DELKEY = c.getColumnIndexOrThrow(FIELD_HOST_DELKEY),
-			COL_FONTSIZE = c.getColumnIndexOrThrow(FIELD_HOST_FONTSIZE),
-			COL_COMPRESSION = c.getColumnIndexOrThrow(FIELD_HOST_COMPRESSION),
-			COL_ENCODING = c.getColumnIndexOrThrow(FIELD_HOST_ENCODING),
-			COL_STAYCONNECTED = c.getColumnIndexOrThrow(FIELD_HOST_STAYCONNECTED),
-			COL_QUICKDISCONNECT = c.getColumnIndexOrThrow(FIELD_HOST_QUICKDISCONNECT);
+				COL_USEAUTHAGENT = c.getColumnIndexOrThrow(FIELD_HOST_USEAUTHAGENT),
+				COL_POSTLOGIN = c.getColumnIndexOrThrow(FIELD_HOST_POSTLOGIN),
+				COL_PUBKEYID = c.getColumnIndexOrThrow(FIELD_HOST_PUBKEYID),
+				COL_WANTSESSION = c.getColumnIndexOrThrow(FIELD_HOST_WANTSESSION),
+				COL_DELKEY = c.getColumnIndexOrThrow(FIELD_HOST_DELKEY),
+				COL_FONTSIZE = c.getColumnIndexOrThrow(FIELD_HOST_FONTSIZE),
+				COL_COMPRESSION = c.getColumnIndexOrThrow(FIELD_HOST_COMPRESSION),
+				COL_ENCODING = c.getColumnIndexOrThrow(FIELD_HOST_ENCODING),
+				COL_STAYCONNECTED = c.getColumnIndexOrThrow(FIELD_HOST_STAYCONNECTED),
+				COL_QUICKDISCONNECT = c.getColumnIndexOrThrow(FIELD_HOST_QUICKDISCONNECT),
+				COL_MOSHPORT = c.getColumnIndexOrThrow(FIELD_HOST_MOSHPORT),
+				COL_MOSH_SERVER = c.getColumnIndexOrThrow(FIELD_HOST_MOSH_SERVER),
+				COL_LOCALE = c.getColumnIndexOrThrow(FIELD_HOST_LOCALE);
 
 		while (c.moveToNext()) {
 			HostBean host = new HostBean();
@@ -533,6 +552,9 @@ public class HostDatabase extends RobustSQLiteOpenHelper implements HostStorage,
 			host.setEncoding(c.getString(COL_ENCODING));
 			host.setStayConnected(Boolean.valueOf(c.getString(COL_STAYCONNECTED)));
 			host.setQuickDisconnect(Boolean.valueOf(c.getString(COL_QUICKDISCONNECT)));
+			host.setMoshPort(c.getInt(COL_MOSHPORT));
+			host.setMoshServer(c.getString(COL_MOSH_SERVER));
+			host.setLocale(c.getString(COL_LOCALE));
 
 			hosts.add(host);
 		}

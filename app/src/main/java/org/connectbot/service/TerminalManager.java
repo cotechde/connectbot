@@ -190,7 +190,11 @@ public class TerminalManager extends Service implements BridgeDisconnectedListen
 	/**
 	 * Disconnect all currently connected bridges.
 	 */
-	public void disconnectAll(final boolean immediate, final boolean excludeLocal) {
+	private void disconnectAll(final boolean immediate) {
+		disconnectAll(immediate, false);
+	}
+
+	public void disconnectAll(final boolean immediate, final boolean onlyRemote) {
 		TerminalBridge[] tmpBridges = null;
 
 		synchronized (bridges) {
@@ -202,9 +206,9 @@ public class TerminalManager extends Service implements BridgeDisconnectedListen
 		if (tmpBridges != null) {
 			// disconnect and dispose of any existing bridges
 			for (int i = 0; i < tmpBridges.length; i++) {
-				if (excludeLocal && !tmpBridges[i].isUsingNetwork())
-					continue;
-				tmpBridges[i].dispatchDisconnect(immediate);
+				if (tmpBridges[i].transport.resetOnConnectionChange() || !onlyRemote) {
+					tmpBridges[i].dispatchDisconnect(immediate);
+				}
 			}
 		}
 	}
@@ -519,6 +523,12 @@ public class TerminalManager extends Service implements BridgeDisconnectedListen
 		Log.i(TAG, "Someone rebound to TerminalManager with " + bridges.size() + " bridges active");
 		keepServiceAlive();
 		setResizeAllowed(true);
+
+		synchronized (bridges) {
+			for (TerminalBridge bridge : bridges) {
+				//bridge.onForeground();
+			}
+		}
 	}
 
 	@Override
@@ -527,12 +537,15 @@ public class TerminalManager extends Service implements BridgeDisconnectedListen
 
 		setResizeAllowed(true);
 
-		if (bridges.size() == 0) {
-			stopWithDelay();
-		} else {
-			// tell each bridge to forget about their previous prompt handler
-			for (TerminalBridge bridge : bridges) {
-				bridge.promptHelper.setHandler(null);
+		synchronized (bridges) {
+			if (bridges.size() == 0) {
+				stopWithDelay();
+			} else {
+				// tell each bridge to forget about their previous prompt handler
+				for (TerminalBridge bridge : bridges) {
+					bridge.promptHelper.setHandler(null);
+					//bridge.onBackground();
+				}
 			}
 		}
 

@@ -59,7 +59,7 @@ android {
         versionCode androidGitVersion.code()
 
         minSdkVersion 14
-        targetSdkVersion 29
+        targetSdkVersion 28
         buildToolsVersion "29.0.3"
         ndkVersion "21.3.6528147"
 
