@@ -57,6 +57,7 @@ import org.connectbot.service.TerminalBridge;
 import org.connectbot.service.TerminalManager;
 import org.connectbot.transport.TransportFactory;
 import org.connectbot.util.HostDatabase;
+import org.connectbot.util.InstallMosh;
 import org.connectbot.util.PreferenceConstants;
 
 import java.util.List;
@@ -181,6 +182,9 @@ public class HostListActivity extends AppCompatListActivity implements OnHostSta
 		mEmptyView = findViewById(R.id.empty);
 
 		this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+		// install Mosh binaries
+		new InstallMosh(this);
 
 		// detect HTC Dream and apply special preferences
 		if (Build.MANUFACTURER.equals("HTC") && Build.DEVICE.equals("dream")) {
